@@ -176,9 +176,7 @@ connection.onInitialized((params) => {
 		documentSelector: ['bat'],
 		legend: semanticTokensLegend,
 		range: true,
-		full: {
-			delta: true
-		}
+		full: false,
 	}
 	connection.client.register(SemanticTokensRegistrationType.type, registrationOptions);
 });
@@ -543,27 +541,6 @@ function buildTokens(builder: SemanticTokensBuilder, document: TextDocument) {
 		modifierCounter++;
 	}
 }
-
-connection.languages.semanticTokens.on((params) => {
-	const document = documents.get(params.textDocument.uri);
-	if (document === undefined) {
-		return { data: [] };
-	}
-	const builder = getTokenBuilder(document);
-	buildTokens(builder, document);
-	return builder.build();
-});
-
-connection.languages.semanticTokens.onDelta((params) => {
-	const document = documents.get(params.textDocument.uri);
-	if (document === undefined) {
-		return { edits: [] };
-	}
-	const builder = getTokenBuilder(document);
-	builder.previousResult(params.previousResultId);
-	buildTokens(builder, document);
-	return builder.buildEdits();
-});
 
 connection.languages.semanticTokens.onRange((params) => {
 	return { data: [] };
